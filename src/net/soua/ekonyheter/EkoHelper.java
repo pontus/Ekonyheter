@@ -36,6 +36,9 @@ import android.util.Log;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+
 
 /**
  * Helper methods to simplify talking with and parsing responses from a
@@ -45,22 +48,15 @@ import java.io.InputStream;
  */
 public class EkoHelper {
     private static final String TAG = "EkoHelper";
-    
-    /**
-     * Regular expression that splits "Word of the day" entry into word
-     * name, word type, and the first description bullet point.
-     */
-    public static final String WORD_OF_DAY_REGEX =
-        "(?s)\\{\\{wotd\\|(.+?)\\|(.+?)\\|([^#\\|]+).*?\\}\\}";
+
+    private static Pattern pattern = Pattern.compile(".*MAATitle[^>]>([^>]*)<.*");   
     
     /**
      * Partial URL to use when requesting the detailed entry for a specific
      * Wiktionary page. Use {@link String#format(String, Object...)} to insert
      * the desired page title after escaping it as needed.
      */
-    private static final String WIKTIONARY_PAGE =
-        "http://en.wiktionary.org/w/api.php?action=query&prop=revisions&titles=%s&" +
-        "rvprop=content&format=json%s";
+    private static final String EKOT_PAGE = "http://mobil.sr.se/site/index.aspx?unitid=83";
 
     /**
      * Partial URL to append to {@link #WIKTIONARY_PAGE} when you want to expand
@@ -148,20 +144,17 @@ public class EkoHelper {
         String expandClause = expandTemplates ? WIKTIONARY_EXPAND_TEMPLATES : "";
         
         // Query the API for content
-        String content = getUrlContent(String.format(WIKTIONARY_PAGE,
+        String content = getUrlContent(String.format(EKOT_PAGE,
                 encodedTitle, expandClause));
-        try {
-            // Drill into the JSON response to find the content body
-            JSONObject response = new JSONObject(content);
-            JSONObject query = response.getJSONObject("query");
-            JSONObject pages = query.getJSONObject("pages");
-            JSONObject page = pages.getJSONObject((String) pages.keys().next());
-            JSONArray revisions = page.getJSONArray("revisions");
-            JSONObject revision = revisions.getJSONObject(0);
-            return revision.getString("*");
-        } catch (JSONException e) {
-            throw new ParseException("Problem parsing API response", e);
-        }
+
+	Matcher match = pattern.matcher(content);
+
+	if (!match.matches()) {
+	    return "";
+	}
+
+	return match.group(0);
+
     }
 
     /**

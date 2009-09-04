@@ -65,17 +65,13 @@ public class Ekonyheter extends AppWidgetProvider {
          * "Word of the day." Will block until the online API returns.
          */
         public RemoteViews buildUpdate(Context context) {
-            // Pick out month names from resources
             Resources res = context.getResources();
-            String[] monthNames = res.getStringArray(R.array.month_names);
             
             // Find current month and day
             Time today = new Time();
             today.setToNow();
 
-            // Build today's page title, like "Wiktionary:Word of the day/March 21"
-            String pageName = res.getString(R.string.template_wotd_title,
-                    monthNames[today.month], today.monthDay);
+            String pageName = res.getString(R.string.template_widget_title);
             RemoteViews updateViews = null;
             String pageContent = "";
             
@@ -84,30 +80,25 @@ public class Ekonyheter extends AppWidgetProvider {
                 EkoHelper.prepareUserAgent(context);
                 pageContent = EkoHelper.getPageContent(pageName, false);
             } catch (ApiException e) {
-                Log.e("WordWidget", "Couldn't contact API", e);
+                Log.e("Ekonyheter", "Couldn't contact API", e);
             } catch (ParseException e) {
-                Log.e("WordWidget", "Couldn't parse API response", e);
+                Log.e("Ekonyheter", "Couldn't parse API response", e);
             }
             
             // Use a regular expression to parse out the word and its definition
-            Pattern pattern = Pattern.compile(EkoHelper.WORD_OF_DAY_REGEX);
-            Matcher matcher = pattern.matcher(pageContent);
-            if (matcher.find()) {
+            if (pageContent.length() != 0 ) {
                 // Build an update that holds the updated widget contents
                 updateViews = new RemoteViews(context.getPackageName(), R.layout.ekonyheter);
                 
-                String wordTitle = matcher.group(1);
-                updateViews.setTextViewText(R.id.word_title, wordTitle);
-                updateViews.setTextViewText(R.id.word_type, matcher.group(2));
-                updateViews.setTextViewText(R.id.definition, matcher.group(3).trim());
+                updateViews.setTextViewText(R.id.title, pageContent);
                 
                 // When user clicks on widget, launch to Wiktionary definition page
-                String definePage = res.getString(R.string.template_define_url,
-                        Uri.encode(wordTitle));
-                Intent defineIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(definePage));
-                PendingIntent pendingIntent = PendingIntent.getActivity(context,
-                        0 /* no requestCode */, defineIntent, 0 /* no flags */);
-                updateViews.setOnClickPendingIntent(R.id.widget, pendingIntent);
+                // jString definePage = res.getString(R.string.template_define_url,
+                //        Uri.encode(wordTitle));
+                // Intent defineIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(definePage));
+                // PendingIntent pendingIntent = PendingIntent.getActivity(context,
+                //        0 /* no requestCode */, defineIntent, 0 /* no flags */);
+                // updateViews.setOnClickPendingIntent(R.id.widget, pendingIntent);
                 
             } else {
                 // Didn't find word of day, so show error message
