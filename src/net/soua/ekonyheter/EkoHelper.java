@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.Vector;
 
 
 /**
@@ -49,8 +50,18 @@ import java.util.regex.Matcher;
 public class EkoHelper {
     private static final String TAG = "EkoHelper";
 
-    private static Pattern pattern = Pattern.compile(".*MAATitle[^>]>([^>]*)<.*");   
+    private static Pattern pattern =  Pattern.compile( ".*?href=\"([^\"]*)\"[^>]*MAATitle[^>]*>([^>]*)<"+
+					   "(.*?MAFArrow[^>]*><a href=\"([^\"]*)\"[^>]*title=\"([^\"]*)\")?"+
+					   "(.*?MAFArrow[^>]*><a href=\"([^\"]*)\"[^>]*title=\"([^\"]*)\")?"+
+					   "(.*?MAFArrow[^>]*><a href=\"([^\"]*)\"[^>]*title=\"([^\"]*)\")?"+
+					   "(.*?MAFArrow[^>]*><a href=\"([^\"]*)\"[^>]*title=\"([^\"]*)\")?"+
+					   "(.*?MAFArrow[^>]*><a href=\"([^\"]*)\"[^>]*title=\"([^\"]*)\")?"+
+					   "(.*?MAFArrow[^>]*><a href=\"([^\"]*)\"[^>]*title=\"([^\"]*)\")?"+
+					   "(.*?MAFArrow[^>]*><a href=\"([^\"]*)\"[^>]*title=\"([^\"]*)\")?"+
+					   "(.*?MAFArrow[^>]*><a href=\"([^\"]*)\"[^>]*title=\"([^\"]*)\")?"+
+					   ".*?", Pattern.DOTALL);   
     
+ 
     /**
      * Partial URL to use when requesting the detailed entry for a specific
      * Wiktionary page. Use {@link String#format(String, Object...)} to insert
@@ -137,24 +148,36 @@ public class EkoHelper {
      * @throws ApiException If any connection or server error occurs.
      * @throws ParseException If there are problems parsing the response.
      */
-    public static String getPageContent(String title, boolean expandTemplates)
+    public static Vector getPageContent(String title, boolean expandTemplates)
             throws ApiException, ParseException {
         // Encode page title and expand templates if requested
-        String encodedTitle = Uri.encode(title);
-        String expandClause = expandTemplates ? WIKTIONARY_EXPAND_TEMPLATES : "";
         
         // Query the API for content
-        String content = getUrlContent(String.format(EKOT_PAGE,
-                encodedTitle, expandClause));
+
+	Vector news = new Vector();
+
+        String content = getUrlContent(EKOT_PAGE);
 
 	Matcher match = pattern.matcher(content);
 
-	if (!match.matches()) {
-	    return "";
+	if (match.matches()) {
+
+	    news.add(match.group(2));
+	    news.add(match.group(1));
+
+
+	    news.add(match.group(5));
+	    news.add(match.group(4));
+
+	    news.add(match.group(8));
+	    news.add(match.group(7));
+
 	}
 
-	return match.group(0);
 
+	
+
+	return news;
     }
 
     /**

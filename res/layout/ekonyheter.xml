@@ -21,18 +21,11 @@
     android:focusable="true"
     style="@style/WidgetBackground">
     
-    <ImageView
-        android:id="@+id/icon"
-        android:layout_width="wrap_content" 
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:src="@drawable/star_logo" />
-    
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content"
-        android:layout_marginTop="14dip"
+        android:layout_marginTop="1dip"
         android:layout_marginBottom="1dip"
         android:includeFontPadding="false"
         android:singleLine="true"
@@ -40,7 +33,7 @@
         style="@style/Text.Title" />
     
     <TextView  
-        android:id="@+id/bullet"
+        android:id="@+id/bullet1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/title"
@@ -50,11 +43,55 @@
         style="@style/BulletPoint" />
     
     <TextView  
-        android:id="@+id/content"
+        android:id="@+id/content1"
         android:layout_width="fill_parent" 
         android:layout_height="wrap_content"
         android:layout_below="@id/title"
-        android:layout_toRightOf="@id/bullet"
+        android:layout_toRightOf="@id/bullet1"
+       android:includeFontPadding="false"
+        android:lineSpacingMultiplier="0.9"
+        android:maxLines="4"
+        android:fadingEdge="vertical"
+        style="@style/Text.Content" />
+
+    <TextView  
+        android:id="@+id/bullet2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/bullet1"
+        android:paddingRight="4dip"
+        android:includeFontPadding="false"
+        android:singleLine="true"
+        style="@style/BulletPoint" />
+    
+    <TextView  
+        android:id="@+id/content2"
+        android:layout_width="fill_parent" 
+        android:layout_height="wrap_content"
+        android:layout_below="@id/content1"
+        android:layout_toRightOf="@id/bullet2"
+       android:includeFontPadding="false"
+        android:lineSpacingMultiplier="0.9"
+        android:maxLines="4"
+        android:fadingEdge="vertical"
+        style="@style/Text.Content" />
+
+    <TextView  
+        android:id="@+id/bullet3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/bullet3"
+        android:paddingRight="4dip"
+        android:includeFontPadding="false"
+        android:singleLine="true"
+        style="@style/BulletPoint" />
+    
+    <TextView  
+        android:id="@+id/content3"
+        android:layout_width="fill_parent" 
+        android:layout_height="wrap_content"
+        android:layout_below="@id/content2"
+        android:layout_toRightOf="@id/bullet3"
         android:paddingRight="5dip"
         android:paddingBottom="4dip"
         android:includeFontPadding="false"

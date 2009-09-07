@@ -35,6 +35,8 @@ import android.widget.RemoteViews;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.Vector;
+
 
 /**
  * Define a simple widget that shows the Wiktionary "Word of the day." To build
@@ -73,7 +75,7 @@ public class Ekonyheter extends AppWidgetProvider {
 
             String pageName = res.getString(R.string.template_widget_title);
             RemoteViews updateViews = null;
-            String pageContent = "";
+            Vector pageContent = null;
             
             try {
                 // Try querying the Wiktionary API for today's word
@@ -86,19 +88,22 @@ public class Ekonyheter extends AppWidgetProvider {
             }
             
             // Use a regular expression to parse out the word and its definition
-            if (pageContent.length() != 0 ) {
+            if (! pageContent.isEmpty() && ((String) pageContent.elementAt(0)).length() != 0 ) {
                 // Build an update that holds the updated widget contents
                 updateViews = new RemoteViews(context.getPackageName(), R.layout.ekonyheter);
                 
-                updateViews.setTextViewText(R.id.title, pageContent);
+                updateViews.setTextViewText(R.id.title, (String) pageContent.elementAt(0));
                 
                 // When user clicks on widget, launch to Wiktionary definition page
                 // jString definePage = res.getString(R.string.template_define_url,
                 //        Uri.encode(wordTitle));
-                // Intent defineIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(definePage));
-                // PendingIntent pendingIntent = PendingIntent.getActivity(context,
-                //        0 /* no requestCode */, defineIntent, 0 /* no flags */);
-                // updateViews.setOnClickPendingIntent(R.id.widget, pendingIntent);
+		
+		String newsURL = "http://mobil.sr.se"+pageContent.elementAt(1);
+
+		Intent defineIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(newsURL));
+		PendingIntent pendingIntent = PendingIntent.getActivity(context,
+									0 /* no requestCode */, defineIntent, 0 /* no flags */);
+                 updateViews.setOnClickPendingIntent(R.id.title, pendingIntent);
                 
             } else {
                 // Didn't find word of day, so show error message
